@@ -2,6 +2,10 @@ import { db } from "@/db";
 import { exercises, workoutExercises, workouts } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
+export async function createWorkout(data: typeof workouts.$inferInsert) {
+  return db.insert(workouts).values(data).returning();
+}
+
 export async function getWorkoutsByUser(userId: string) {
   return db
     .select({
