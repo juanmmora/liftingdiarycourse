@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
+import Link from "next/link";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -48,18 +49,20 @@ export function WorkoutCalendar({ workouts }: { workouts: Workout[] }) {
         ) : (
           <div className="flex flex-col gap-4">
             {workoutsForDate.map((workout) => (
-              <Card key={workout.id}>
-                <CardHeader>
-                  <CardTitle className="text-lg">{workout.name}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                    {workout.exercises.map((exercise) => (
-                      <li key={exercise}>{exercise}</li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
+              <Link key={workout.id} href={`/dashboard/workout/${workout.id}`}>
+                <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+                  <CardHeader>
+                    <CardTitle className="text-lg">{workout.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                      {workout.exercises.map((exercise) => (
+                        <li key={exercise}>{exercise}</li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         )}
