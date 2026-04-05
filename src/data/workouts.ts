@@ -6,6 +6,30 @@ export async function createWorkout(data: typeof workouts.$inferInsert) {
   return db.insert(workouts).values(data).returning();
 }
 
+export async function getWorkoutById(id: string, userId: string) {
+  const result = await db
+    .select()
+    .from(workouts)
+    .where(eq(workouts.id, id))
+    .limit(1);
+
+  const workout = result[0];
+  if (!workout || workout.userId !== userId) return null;
+  return workout;
+}
+
+export async function updateWorkout(
+  id: string,
+  userId: string,
+  data: { name: string; startedAt: Date }
+) {
+  return db
+    .update(workouts)
+    .set({ name: data.name, startedAt: data.startedAt, updatedAt: new Date() })
+    .where(eq(workouts.id, id) && eq(workouts.userId, userId))
+    .returning();
+}
+
 export async function getWorkoutsByUser(userId: string) {
   return db
     .select({
