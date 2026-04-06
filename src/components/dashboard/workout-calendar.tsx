@@ -2,9 +2,16 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 import Link from "next/link";
 import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 type Workout = {
   id: string;
@@ -15,6 +22,7 @@ type Workout = {
 
 export function WorkoutCalendar({ workouts }: { workouts: Workout[] }) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [open, setOpen] = useState(false);
 
   const workoutsForDate = workouts.filter(
     (w) =>
@@ -23,25 +31,41 @@ export function WorkoutCalendar({ workouts }: { workouts: Workout[] }) {
   );
 
   return (
-    <div className="flex gap-6 items-start">
-      <Card className="shrink-0">
-        <CardHeader>
-          <CardTitle>Select Date</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={(date) => date && setSelectedDate(date)}
-          />
-        </CardContent>
-      </Card>
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Workouts Dashboard</h1>
+          <p className="text-muted-foreground mt-1">
+            Workouts &middot; {format(selectedDate, "do MMM yyyy")}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Link href="/dashboard/workout/new">
+            <Button>Log New Workout</Button>
+          </Link>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="icon">
+                <CalendarIcon className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={(date) => {
+                  if (date) {
+                    setSelectedDate(date);
+                    setOpen(false);
+                  }
+                }}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+      </div>
 
-      <div className="flex-1">
-        <h2 className="text-xl font-semibold mb-4">
-          Workouts for {format(new Date(selectedDate), "do MMM yyyy")}
-        </h2>
-
+      <div>
         {workoutsForDate.length === 0 ? (
           <p className="text-muted-foreground">
             No workouts logged for this date.
