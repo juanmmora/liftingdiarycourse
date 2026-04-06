@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { exercises, workoutExercises, workouts } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 export async function createWorkout(data: typeof workouts.$inferInsert) {
   return db.insert(workouts).values(data).returning();
@@ -26,7 +26,7 @@ export async function updateWorkout(
   return db
     .update(workouts)
     .set({ name: data.name, startedAt: data.startedAt, updatedAt: new Date() })
-    .where(eq(workouts.id, id) && eq(workouts.userId, userId))
+    .where(and(eq(workouts.id, id), eq(workouts.userId, userId)))
     .returning();
 }
 
